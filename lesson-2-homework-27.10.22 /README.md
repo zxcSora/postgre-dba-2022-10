@@ -42,7 +42,8 @@ docker logs -f pg-server
 ```
 Видим, что база готова принимать подключения:
 
-https://i.imgur.com/9wLnwS8.png
+![Alt text](https://i.imgur.com/9wLnwS8.png "screen")
+
 
 - Запускаем контейнер с клиентом:
 ```bash
