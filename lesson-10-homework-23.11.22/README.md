@@ -85,7 +85,7 @@ postgres=*# update accounts set amount = 2044.44;
 2022-11-23 10:52:58.673 UTC [4266] postgres@postgres DETAIL:  Process holding the lock: 3975. Wait queue: 4266.
 2022-11-23 10:52:58.673 UTC [4266] postgres@postgres STATEMENT:  update accounts set amount = 2044.44;
 ```
-Видим, что первая транзакция имеет режим ShareLock, что означает, что таблица будет защищена от конкурентных записей.
+Видим, что первая транзакция имеет режим ShareLock, что означает, что таблица будет защищена от конкурентных записей. 
 Вторая транзакция получила режим ExclusiveLock, этот режим позволяет только читать, но не писать в конкурентном режиме.
 
 
