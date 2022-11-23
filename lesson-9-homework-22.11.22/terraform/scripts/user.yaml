@@ -1,0 +1,10 @@
+#cloud-config
+users:
+  - default
+  - name: ansible
+    primary_group: ansible
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+#    lock_passwd: false
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBATlvyzNr0ypS+mer+3hVziBOTZP63VtBv1acferZfRwFS7ajw4QG0kd3FrRUamKIcHcp/c9vr76C/wlF5l3tI7dxMRRKaWCQysXEpWyV4BRVfNtQgmZsh2eY12q8RaDD6YFjv5MHbQRCBQnGuxCBve/vgyeUxf8wUfqrnosbGK5PbCe0+VQGq05EZGg+mN9butiI2NeD9JX8NI9ecRMhxilTGdS8xPF32T+5ULE7NOWIk3JgXlAcdQ7JhGbUajud6GmKlhQF/7xVtsvH7widJWVkIeToVVDdpd5u5+IFFe2HrtHBwJKyV0czBerM9JADxdL7QzFY+cHP68Hbn3Bb1nLQjpCwVUFFVIM56vt8tky2bsZTEONnVf0BfvjKqpjBocDD+TNqsq2SputdbwrRkMraphPCzVZB8VJMcsySaRr/LK7NcYWsKahHvpg3/pEBSdFXbumW9Um9gEJzo1HLJj/c7wuhqNePASCx4gFCppmtEH+CLY1x1CQjWwXF1zLwEgU6LBqXyLqRtUhVnqN0Zf44YZxnCeNZdk5P28RrlxzSDelR96l/UOQpbSIDXaZw6MJBTHMo3gR87iYSPbAInKUz5eiDErtCbKndIgp9tSfEoRuV1BA8PalNRYX8io7hLXjGW7+JvUOsw8uZODAPq+nRFCiyGfqau1FE4Lb+RQ== jumper@nobody-lp
