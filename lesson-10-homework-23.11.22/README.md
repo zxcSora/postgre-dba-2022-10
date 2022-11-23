@@ -95,17 +95,42 @@ postgres=*# update accounts set amount = 2044.44;
 ```SQL
 postgres=# BEGIN;
 BEGIN
-postgres=*# update accounts set amount = 2022.22;
-UPDATE 3
+postgres=*# UPDATE test2 SET name=id RETURNING *,pg_sleep(5),pg_advisory_lock(id);
 ```
-2 сессия подвисла и ожидает завершения транзакции:
+2 сессия
 ```SQL
-postgres=*# update accounts set amount = 2001.11;
+postgres=# BEGIN;
+BEGIN
+postgres=*# VALUES(pg_advisory_lock(5));
+ column1 
+---------
+  
+(1 row)
+
+postgres=*# UPDATE test2 SET name=id RETURNING *,pg_sleep(5),pg_advisory_lock(5+id);
+ERROR:  deadlock detected
+DETAIL:  Process 3975 waits for ShareLock on transaction 751; blocked by process 3996.
+Process 3996 waits for ExclusiveLock on advisory lock [13707,0,5,1]; blocked by process 3975.
+HINT:  See server log for query details.
+CONTEXT:  while updating tuple (0,1) in relation "test2"
+postgres=!# 
+
 ```
 В логах видим:
 ```bash
-2022-11-23 10:48:29.347 UTC [3975] postgres@postgres LOG:  process 3975 still waiting for ShareLock on transaction 743 after 200.142 ms
-2022-11-23 10:48:29.347 UTC [3975] postgres@postgres DETAIL:  Process holding the lock: 3996. Wait queue: 3975.
-2022-11-23 10:48:29.347 UTC [3975] postgres@postgres CONTEXT:  while updating tuple (0,2) in relation "accounts"
-2022-11-23 10:48:29.347 UTC [3975] postgres@postgres STATEMENT:  update accounts set amount = 2001.11;
+2022-11-23 11:16:28.647 UTC [3975] postgres@postgres LOG:  process 3975 detected deadlock while waiting for ShareLock on transaction 751 after 200.160 ms
+2022-11-23 11:16:28.647 UTC [3975] postgres@postgres DETAIL:  Process holding the lock: 3996. Wait queue: .
+2022-11-23 11:16:28.647 UTC [3975] postgres@postgres CONTEXT:  while updating tuple (0,1) in relation "test2"
+2022-11-23 11:16:28.647 UTC [3975] postgres@postgres STATEMENT:  UPDATE test2 SET name=id RETURNING *,pg_sleep(5),pg_advisory_lock(5+id);
+2022-11-23 11:16:28.648 UTC [3975] postgres@postgres ERROR:  deadlock detected
+2022-11-23 11:16:28.648 UTC [3975] postgres@postgres DETAIL:  Process 3975 waits for ShareLock on transaction 751; blocked by process 3996.
+	Process 3996 waits for ExclusiveLock on advisory lock [13707,0,5,1]; blocked by process 3975.
+	Process 3975: UPDATE test2 SET name=id RETURNING *,pg_sleep(5),pg_advisory_lock(5+id);
+	Process 3996: UPDATE test2 SET name=id RETURNING *,pg_sleep(5),pg_advisory_lock(id);
+2022-11-23 11:16:28.648 UTC [3975] postgres@postgres HINT:  See server log for query details.
+2022-11-23 11:16:28.648 UTC [3975] postgres@postgres CONTEXT:  while updating tuple (0,1) in relation "test2"
+2022-11-23 11:16:28.648 UTC [3975] postgres@postgres STATEMENT:  UPDATE test2 SET name=id RETURNING *,pg_sleep(5),pg_advisory_lock(5+id);
+2022-11-23 11:18:07.337 UTC [3996] postgres@postgres LOG:  process 3996 acquired ExclusiveLock on advisory lock [13707,0,5,1] after 105625.137 ms
+2022-11-23 11:18:07.337 UTC [3996] postgres@postgres STATEMENT:  UPDATE test2 SET name=id RETURNING *,pg_sleep(5),pg_advisory_lock(id);
+
 ```
