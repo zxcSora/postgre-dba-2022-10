@@ -1,0 +1,64 @@
+version: '2'
+services:
+  db0:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db0:/var/lib/postgresql/data
+    command: [ "postgres", "-c", "wal_level=logical" ]
+  db1:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5433:5432'
+    volumes:
+      - ./db1:/var/lib/postgresql/data
+    command: [ "postgres", "-c", "wal_level=logical" ]
+  db2:
+    image: 'bitnami/postgresql:latest'
+    restart: always
+    ports:
+      - '5434:5432'
+    volumes:
+      - ./db2:/bitnami/postgresql/
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=postgres
+  db3:
+    image: 'bitnami/postgresql:latest'
+    restart: always
+    depends_on:
+      - db2
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      - POSTGRESQL_MASTER_HOST=db2
+      - POSTGRESQL_PASSWORD=my_password
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+    ports:
+      - '5435:5432'
+    volumes:
+      - ./db3:/bitnami/postgresql/
+
+volumes:
+  db0:
+    driver: local
+  db1:
+    driver: local
+  db2:
+    driver: local
+  db3:
+    driver: local
