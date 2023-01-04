@@ -23,7 +23,7 @@ volumes:
 - Секционирование таблицы
 
 В начале попробуем сделать таблицу flights секционированной по дате отправления
-
+```sql
 CREATE TABLE flights_range (
       flight_id    integer,
       flight_no    character(6),
@@ -36,7 +36,7 @@ CREATE TABLE flights_range (
       actual_departure    timestamptz,
       actual_arrival      timestamptz
    ) PARTITION BY RANGE(scheduled_departure);
-
+```
 ```SQL
 CREATE TABLE flights_range_201705 PARTITION OF flights_range
        FOR VALUES FROM ('2017-05-01'::timestamptz) TO ('2017-06-01'::timestamptz);
