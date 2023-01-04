@@ -1,0 +1,17 @@
+version: '2'
+services:
+  db0:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db0:/var/lib/postgresql/data
+      - ./demo-medium-20170815.sql:/demo-medium-20170815.sql
+    command: [ "postgres", "-c", "wal_level=logical" ]
+volumes:
+  db0:
+    driver: local
